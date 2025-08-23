@@ -1,0 +1,9 @@
+venv
+*.zip
+*.png
+.idea
+.ipynb_checkpoints
+.DS_Store
+data
+downloaded_dataset
+__pycache__*.pyc
