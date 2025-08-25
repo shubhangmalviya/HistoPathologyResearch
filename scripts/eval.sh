@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")"/.. && pwd)"
+PYBIN="$ROOT_DIR/venv/bin/python"
+
+"$PYBIN" "$ROOT_DIR/src/eval_models.py" "$@"
+
+

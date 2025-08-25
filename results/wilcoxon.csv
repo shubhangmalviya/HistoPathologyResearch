@@ -1,0 +1,5 @@
+metric,statistic,p_value,effect_r_rank_biserial,p_adj_bh,significant@0.05
+Dice,0.0,1.0,-1.0,1.2916666666666667,False
+AJI,2.0,0.9375,-0.7333333333333333,1.9375,False
+PQ,1.0,0.96875,-0.8666666666666667,3.75,False
+F1,1.0,0.96875,-0.8666666666666667,1.0,False

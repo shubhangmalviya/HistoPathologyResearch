@@ -91,4 +91,54 @@ output/
 - **Inline comments** now explain each step and the rationale behind it.
 - The **docstrings** clarify why certain design decisions were made (e.g., merging, output structure, and how lineage is preserved).
 
-If you need further clarification or want to see the updated code, let me know!
+
+## Standardized Commands
+
+Use the scripts or Makefile to run the end-to-end workflow.
+
+### Using scripts/
+
+```bash
+# 1) Create unified + per-tissue splits
+./scripts/split_all.sh
+
+# 2) Train 5 expert models (override with EPOCHS, BATCH_SIZE, LR)
+EPOCHS=5 BATCH_SIZE=16 LR=5e-4 ./scripts/train_experts.sh
+
+# 3) Train unified model over the 5 tissues
+EPOCHS=5 BATCH_SIZE=16 LR=5e-4 ./scripts/train_unified.sh
+
+# 4) Evaluate experts vs unified and run statistical tests
+./scripts/eval_and_stats.sh
+
+# 5) Individual helpers
+./scripts/eval.sh
+./scripts/stats.sh
+```
+
+### Using Makefile
+
+```bash
+make splits   # runs scripts/split_all.sh
+make experts  # runs scripts/train_experts.sh
+make unified  # runs scripts/train_unified.sh
+make eval     # runs scripts/eval_and_stats.sh
+make stats    # runs the stats module only
+make all      # splits + experts + unified + eval
+```
+
+### Direct Python invocations
+
+```bash
+"$(pwd)/venv/bin/python" src/split_pannuke.py
+"$(pwd)/venv/bin/python" src/split_by_tissue.py
+"$(pwd)/venv/bin/python" src/train_tissue_unet.py --tissue Breast --epochs 1 --batch_size 16 --lr 5e-4
+"$(pwd)/venv/bin/python" src/train_unified_unet.py --epochs 1 --batch_size 16 --lr 5e-4 --tissues Breast Colon Adrenal_gland Esophagus Bile-duct
+"$(pwd)/venv/bin/python" src/eval_models.py --batch_size 16
+"$(pwd)/venv/bin/python" src/stats/compare_expert_vs_unified.py
+```
+
+Artifacts:
+- Checkpoints: `checkpoints/`
+- Datasets: `dataset/`, `dataset_tissues/`
+- Metrics/Stats: `results/metrics.csv`, `results/wilcoxon.csv`, `results/ttest.csv`, `results/stats_report.md`
