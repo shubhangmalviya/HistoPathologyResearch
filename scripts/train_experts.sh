@@ -11,7 +11,7 @@ TISSUES=("Breast" "Colon" "Adrenal_gland" "Esophagus" "Bile-duct")
 
 for T in "${TISSUES[@]}"; do
   echo "[train expert] $T"
-  PYTHONPATH="$ROOT_DIR/src" "$PYBIN" "$ROOT_DIR/src/training/train_expert_unet.py" --tissue "$T" --epochs "$EPOCHS" --batch_size "$BATCH_SIZE" --lr "$LR"
+  PYTHONPATH="$ROOT_DIR" "$PYBIN" "$ROOT_DIR/src/training/train_expert_unet.py" --tissue "$T" --epochs "$EPOCHS" --batch_size "$BATCH_SIZE" --lr "$LR"
 done
 
 echo "[train expert] Done."

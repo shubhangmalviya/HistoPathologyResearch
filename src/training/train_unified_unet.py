@@ -7,9 +7,9 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, ConcatDataset
 
-from datasets.pannuke_tissue_dataset import PanNukeTissueDataset
-from models.unet import UNet
-from utils.paths import checkpoints_dir, dataset_root_tissues, ensure_dirs_exist
+from src.datasets.pannuke_tissue_dataset import PanNukeTissueDataset
+from src.models.unet import UNet
+from src.utils.paths import checkpoints_dir, dataset_root_tissues, ensure_dirs_exist
 
 
 def dice_loss(logits: torch.Tensor, targets: torch.Tensor, eps: float = 1e-6) -> torch.Tensor:

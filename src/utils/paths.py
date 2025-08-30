@@ -28,6 +28,14 @@ def logs_dir(rq: str = "rq2") -> str:
     return os.path.join(artifacts_root(rq), "logs")
 
 
+def checkpoints_oof_dir(model_type: str, rq: str = "rq2") -> str:
+    """
+    Out-of-fold checkpoints base directory: artifacts/rq2/checkpoints_oof/{model_type}
+    model_type: "unified" or "experts"
+    """
+    return os.path.join(artifacts_root(rq), "checkpoints_oof", model_type)
+
+
 def dataset_root_unified() -> str:
     return os.path.join(project_root(), "dataset")
 
@@ -45,6 +53,8 @@ def ensure_dirs_exist() -> None:
         artifacts_root(),
         checkpoints_dir("unified"),
         checkpoints_dir("experts"),
+        checkpoints_oof_dir("unified"),
+        checkpoints_oof_dir("experts"),
         results_dir(),
         logs_dir(),
         dataset_root_unified(),
