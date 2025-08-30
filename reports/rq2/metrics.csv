@@ -1,0 +1,11 @@
+model,tissue,Dice,AJI,PQ,F1
+expert,Breast,0.1274,0.4513,0.3713,0.5052
+expert,Colon,0.1636,0.2823,0.2291,0.3064
+expert,Adrenal_gland,0.1476,0.3178,0.2132,0.2932
+expert,Esophagus,0.0609,0.0654,0.0037,0.0050
+expert,Bile-duct,0.0939,0.2641,0.0802,0.1198
+unified,Breast,0.3011,0.3834,0.3278,0.4442
+unified,Colon,0.2557,0.3500,0.2968,0.3917
+unified,Adrenal_gland,0.2353,0.4163,0.3240,0.4322
+unified,Esophagus,0.1835,0.3634,0.2885,0.3885
+unified,Bile-duct,0.1931,0.3597,0.2788,0.3800

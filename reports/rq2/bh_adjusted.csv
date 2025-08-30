@@ -1,0 +1,5 @@
+metric,p_one_sided,p_bh,reject@0.05
+PQ,0.9999999999999422,1.0,False
+Dice,1.0,1.0,False
+AJI,0.9980487954409396,1.0,False
+F1,0.9999999999981501,1.0,False

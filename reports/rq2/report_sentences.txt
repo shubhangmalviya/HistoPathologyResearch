@@ -1,0 +1,3 @@
+Analyses were performed at the per-image level. A total of n=1016 patches had paired predictions across 5 tissues (median 88 per tissue; range 84-471).
+For PQ, a one-sided Wilcoxon signed-rank test on paired differences (expert − unified) found no improvement with median Δ=-0.0147, rank-biserial=-0.276, p_BH=1. A mixed-effects model with tissue as a random intercept estimated mean Δ=-0.1237 (95% CI -0.2792, 0.0318), p=0.9541.
+With the observed sample size, the minimum detectable effect at 80% power (one-sided α=0.05) corresponds to d_z≈0.078 (≈0.0134 PQ units).
