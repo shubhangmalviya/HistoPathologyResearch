@@ -96,11 +96,12 @@ def write_report_md(path: str, wilcox_df: pd.DataFrame, ttest_df: pd.DataFrame) 
 
 
 def main():
+    from utils.paths import results_dir, artifacts_root
     parser = argparse.ArgumentParser()
-    parser.add_argument("--metrics_csv", type=str, default=os.path.join(os.path.dirname(__file__), "..", "..", "results", "metrics.csv"))
-    parser.add_argument("--out_wilcox_csv", type=str, default=os.path.join(os.path.dirname(__file__), "..", "..", "results", "wilcoxon.csv"))
-    parser.add_argument("--out_ttest_csv", type=str, default=os.path.join(os.path.dirname(__file__), "..", "..", "results", "ttest.csv"))
-    parser.add_argument("--out_md", type=str, default=os.path.join(os.path.dirname(__file__), "..", "..", "results", "stats_report.md"))
+    parser.add_argument("--metrics_csv", type=str, default=os.path.join(results_dir(), "metrics.csv"))
+    parser.add_argument("--out_wilcox_csv", type=str, default=os.path.join(results_dir(), "wilcoxon.csv"))
+    parser.add_argument("--out_ttest_csv", type=str, default=os.path.join(results_dir(), "ttest.csv"))
+    parser.add_argument("--out_md", type=str, default=os.path.join(results_dir(), "stats_report.md"))
     args = parser.parse_args()
 
     df = pd.read_csv(args.metrics_csv)

@@ -17,7 +17,7 @@ eval:
 	./scripts/eval_and_stats.sh
 
 stats:
-	$(PY) src/stats/compare_expert_vs_unified.py
+	PYTHONPATH="$(shell pwd)/src" $(PY) src/stats/compare_expert_vs_unified.py
 
 all: splits experts unified eval
 

@@ -5,10 +5,10 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")"/.. && pwd)"
 PYBIN="$ROOT_DIR/venv/bin/python"
 
 echo "[split] Creating unified dataset splits into dataset/"
-"$PYBIN" "$ROOT_DIR/src/split_pannuke.py"
+PYTHONPATH="$ROOT_DIR/src" "$PYBIN" "$ROOT_DIR/src/datasets/split_pannuke.py"
 
 echo "[split] Creating per-tissue dataset splits into dataset_tissues/ (top-5)"
-"$PYBIN" "$ROOT_DIR/src/split_by_tissue.py"
+PYTHONPATH="$ROOT_DIR/src" "$PYBIN" "$ROOT_DIR/src/datasets/split_by_tissue.py"
 
 echo "[split] Done."
 

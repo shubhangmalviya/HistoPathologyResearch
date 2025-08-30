@@ -2,9 +2,10 @@ import os
 import shutil
 import re
 from typing import List, Tuple
-
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
+
+from src.utils.paths import processed_output_root, dataset_root_unified
 
 
 _NUMBER_PATTERN = re.compile(r"(\d+)")
@@ -79,33 +80,27 @@ def _save_split_lists(dst_root: str, name: str, items: List[str]) -> None:
             f.write(f"{item}\n")
 
 
-def choose_top_tissues(processed_root: str, top_k: int = 5) -> List[str]:
-    counts = []
-    for tissue in os.listdir(processed_root):
-        img_dir = os.path.join(processed_root, tissue, "images")
-        if not os.path.isdir(img_dir):
-            continue
-        count = sum(1 for _ in os.scandir(img_dir))
-        counts.append((count, tissue))
-    counts.sort(reverse=True)
-    return [t for _, t in counts[:top_k]]
-
-
-def split_by_tissue(
-    processed_root: str,
-    dataset_root: str,
-    tissues: List[str],
+def main(
+    processed_root: str = processed_output_root(),
+    dataset_root: str = dataset_root_unified(),
     test_split: float = 0.20,
     val_split: float = 0.10,
     seed: int = 42,
 ) -> None:
     _ensure_dir(dataset_root)
-    for tissue in tissues:
+
+    tissue_types = [d for d in os.listdir(processed_root) if os.path.isdir(os.path.join(processed_root, d))]
+    tissue_types.sort()
+
+    all_train_imgs: List[str] = []
+    all_val_imgs: List[str] = []
+    all_test_imgs: List[str] = []
+
+    for tissue in tissue_types:
         src_img_dir = os.path.join(processed_root, tissue, "images")
         src_sem_dir = os.path.join(processed_root, tissue, "sem_masks")
         src_inst_dir = os.path.join(processed_root, tissue, "inst_masks")
         if not (os.path.isdir(src_img_dir) and os.path.isdir(src_sem_dir) and os.path.isdir(src_inst_dir)):
-            print(f"Skipping {tissue}: missing required directories")
             continue
 
         img_list = _list_sorted(src_img_dir)
@@ -117,23 +112,17 @@ def split_by_tissue(
             img_list, sem_list, inst_list, test_split, val_split, seed
         )
 
-        dst_tissue_root = os.path.join(dataset_root, tissue)
-        _copy_split(src_img_dir, src_sem_dir, src_inst_dir, (img_train, sem_train, inst_train), dst_tissue_root, "train")
-        _copy_split(src_img_dir, src_sem_dir, src_inst_dir, (img_val, sem_val, inst_val), dst_tissue_root, "val")
-        _copy_split(src_img_dir, src_sem_dir, src_inst_dir, (img_test, sem_test, inst_test), dst_tissue_root, "test")
+        _copy_split(src_img_dir, src_sem_dir, src_inst_dir, (img_train, sem_train, inst_train), dataset_root, "train")
+        _copy_split(src_img_dir, src_sem_dir, src_inst_dir, (img_val, sem_val, inst_val), dataset_root, "val")
+        _copy_split(src_img_dir, src_sem_dir, src_inst_dir, (img_test, sem_test, inst_test), dataset_root, "test")
 
-        _save_split_lists(dst_tissue_root, "train", img_train)
-        _save_split_lists(dst_tissue_root, "val", img_val)
-        _save_split_lists(dst_tissue_root, "test", img_test)
+        all_train_imgs.extend([os.path.join(tissue, name) for name in img_train])
+        all_val_imgs.extend([os.path.join(tissue, name) for name in img_val])
+        all_test_imgs.extend([os.path.join(tissue, name) for name in img_test])
 
-
-def main():
-    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-    processed_root = os.path.join(project_root, "output")
-    dataset_root = os.path.join(project_root, "dataset_tissues")
-    tissues = choose_top_tissues(processed_root, top_k=5)
-    print("Selected tissues:", tissues)
-    split_by_tissue(processed_root, dataset_root, tissues)
+    _save_split_lists(dataset_root, "train", all_train_imgs)
+    _save_split_lists(dataset_root, "val", all_val_imgs)
+    _save_split_lists(dataset_root, "test", all_test_imgs)
 
 
 if __name__ == "__main__":

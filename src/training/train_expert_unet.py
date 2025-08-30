@@ -7,8 +7,9 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 
-from data.pannuke_tissue_dataset import PanNukeTissueDataset
-from models.unet import UNet
+from src.datasets.pannuke_tissue_dataset import PanNukeTissueDataset
+from src.models.unet import UNet
+from src.utils.paths import checkpoints_dir, dataset_root_tissues, ensure_dirs_exist
 
 
 def dice_loss(logits: torch.Tensor, targets: torch.Tensor, eps: float = 1e-6) -> torch.Tensor:
@@ -66,14 +67,16 @@ def get_loaders(tissue_root: str, batch_size: int = 8, num_workers: int = 2):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset_tissues_root", type=str, default=os.path.join(os.path.dirname(__file__), "..", "dataset_tissues"))
+    parser.add_argument("--dataset_tissues_root", type=str, default=dataset_root_tissues())
     parser.add_argument("--tissue", type=str, required=True, help="Tissue folder name under dataset_tissues")
     parser.add_argument("--epochs", type=int, default=1)
     parser.add_argument("--batch_size", type=int, default=8)
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--num_classes", type=int, default=7)
-    parser.add_argument("--save_dir", type=str, default=os.path.join(os.path.dirname(__file__), "..", "checkpoints"))
+    parser.add_argument("--save_dir", type=str, default=checkpoints_dir("experts"))
     args = parser.parse_args()
+
+    ensure_dirs_exist()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
 

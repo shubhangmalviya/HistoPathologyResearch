@@ -7,3 +7,4 @@ venv
 data
 downloaded_dataset
 __pycache__*.pyc
+artifacts/

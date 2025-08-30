@@ -3,13 +3,13 @@ import argparse
 from typing import List, Dict
 
 import numpy as np
-from PIL import Image
 import torch
 from torch.utils.data import DataLoader
 
-from data.pannuke_tissue_dataset import PanNukeTissueDataset
-from models.unet import UNet
-from metrics.seg_metrics import dice_coefficient, reconstruct_instances, aji_aggregated_jaccard, pq_panoptic, f1_object
+from src.datasets.pannuke_tissue_dataset import PanNukeTissueDataset
+from src.models.unet import UNet
+from src.metrics.seg_metrics import dice_coefficient, reconstruct_instances, aji_aggregated_jaccard, pq_panoptic, f1_object
+from src.utils.paths import checkpoints_dir, results_dir, dataset_root_tissues, ensure_dirs_exist
 
 
 def load_checkpoint(ckpt_path: str, num_classes: int = 7) -> UNet:
@@ -35,8 +35,6 @@ def eval_on_loader(model: UNet, loader: DataLoader, device: torch.device) -> Dic
         gts = targets.numpy()
 
         for pred_sem, gt_sem in zip(preds, gts):
-            # For instance metrics, we approximate boundaries from semantic edges
-            # A more accurate approach would use true instance masks if available.
             boundary = (pred_sem != np.pad(pred_sem, 1, mode='edge')[1:-1, 1:-1]).astype(np.uint8)
             pred_inst = reconstruct_instances(pred_sem, boundary)
             gt_boundary = (gt_sem != np.pad(gt_sem, 1, mode='edge')[1:-1, 1:-1]).astype(np.uint8)
@@ -57,23 +55,22 @@ def eval_on_loader(model: UNet, loader: DataLoader, device: torch.device) -> Dic
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset_tissues_root", type=str, default=os.path.join(os.path.dirname(__file__), "..", "dataset_tissues"))
+    parser.add_argument("--dataset_tissues_root", type=str, default=dataset_root_tissues())
     parser.add_argument("--tissues", type=str, nargs="+", default=["Breast", "Colon", "Adrenal_gland", "Esophagus", "Bile-duct"])
-    parser.add_argument("--checkpoints_root", type=str, default=os.path.join(os.path.dirname(__file__), "..", "checkpoints"))
-    parser.add_argument("--save_csv", type=str, default=os.path.join(os.path.dirname(__file__), "..", "results", "metrics.csv"))
+    parser.add_argument("--experts_ckpts_root", type=str, default=checkpoints_dir("experts"))
+    parser.add_argument("--unified_ckpt", type=str, default=os.path.join(checkpoints_dir("unified"), "unet_unified.pt"))
+    parser.add_argument("--save_csv", type=str, default=os.path.join(results_dir(), "metrics.csv"))
     parser.add_argument("--batch_size", type=int, default=8)
     args = parser.parse_args()
 
+    ensure_dirs_exist()
     os.makedirs(os.path.dirname(args.save_csv), exist_ok=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
 
-    # Load expert checkpoints per tissue
-    expert_ckpts = {t: os.path.join(args.checkpoints_root, f"unet_{t}.pt") for t in args.tissues}
-    unified_ckpt = os.path.join(args.checkpoints_root, "unet_unified.pt")
+    expert_ckpts = {t: os.path.join(args.experts_ckpts_root, f"unet_{t}.pt") for t in args.tissues}
 
     rows: List[str] = ["model,tissue,Dice,AJI,PQ,F1"]
 
-    # Evaluate experts on their tissue test splits
     for tissue in args.tissues:
         test_ds = PanNukeTissueDataset(os.path.join(args.dataset_tissues_root, tissue), split="test")
         test_loader = DataLoader(test_ds, batch_size=args.batch_size, shuffle=False)
@@ -81,8 +78,7 @@ def main():
         metrics = eval_on_loader(expert_model, test_loader, device)
         rows.append(f"expert,{tissue},{metrics['Dice']:.4f},{metrics['AJI']:.4f},{metrics['PQ']:.4f},{metrics['F1']:.4f}")
 
-    # Evaluate unified model on each tissue test split
-    unified_model = load_checkpoint(unified_ckpt)
+    unified_model = load_checkpoint(args.unified_ckpt)
     for tissue in args.tissues:
         test_ds = PanNukeTissueDataset(os.path.join(args.dataset_tissues_root, tissue), split="test")
         test_loader = DataLoader(test_ds, batch_size=args.batch_size, shuffle=False)

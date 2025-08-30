@@ -7,8 +7,9 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, ConcatDataset
 
-from data.pannuke_tissue_dataset import PanNukeTissueDataset
+from datasets.pannuke_tissue_dataset import PanNukeTissueDataset
 from models.unet import UNet
+from utils.paths import checkpoints_dir, dataset_root_tissues, ensure_dirs_exist
 
 
 def dice_loss(logits: torch.Tensor, targets: torch.Tensor, eps: float = 1e-6) -> torch.Tensor:
@@ -66,14 +67,16 @@ def get_concat_loaders(dataset_root: str, tissues: List[str], batch_size: int = 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset_tissues_root", type=str, default=os.path.join(os.path.dirname(__file__), "..", "dataset_tissues"))
+    parser.add_argument("--dataset_tissues_root", type=str, default=dataset_root_tissues())
     parser.add_argument("--tissues", type=str, nargs="+", default=["Breast", "Colon", "Adrenal_gland", "Esophagus", "Bile-duct"])
     parser.add_argument("--epochs", type=int, default=1)
     parser.add_argument("--batch_size", type=int, default=16)
     parser.add_argument("--lr", type=float, default=5e-4)
     parser.add_argument("--num_classes", type=int, default=7)
-    parser.add_argument("--save_dir", type=str, default=os.path.join(os.path.dirname(__file__), "..", "checkpoints"))
+    parser.add_argument("--save_dir", type=str, default=checkpoints_dir("unified"))
     args = parser.parse_args()
+
+    ensure_dirs_exist()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
 
@@ -104,3 +107,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+

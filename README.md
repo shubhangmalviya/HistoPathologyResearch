@@ -127,18 +127,18 @@ make stats    # runs the stats module only
 make all      # splits + experts + unified + eval
 ```
 
-### Direct Python invocations
+### Direct Python invocations (RQ2 layout)
 
 ```bash
-"$(pwd)/venv/bin/python" src/split_pannuke.py
-"$(pwd)/venv/bin/python" src/split_by_tissue.py
-"$(pwd)/venv/bin/python" src/train_tissue_unet.py --tissue Breast --epochs 1 --batch_size 16 --lr 5e-4
-"$(pwd)/venv/bin/python" src/train_unified_unet.py --epochs 1 --batch_size 16 --lr 5e-4 --tissues Breast Colon Adrenal_gland Esophagus Bile-duct
-"$(pwd)/venv/bin/python" src/eval_models.py --batch_size 16
-"$(pwd)/venv/bin/python" src/stats/compare_expert_vs_unified.py
+PYTHONPATH="$(pwd)/src" "$(pwd)/venv/bin/python" src/datasets/split_pannuke.py
+PYTHONPATH="$(pwd)/src" "$(pwd)/venv/bin/python" src/datasets/split_by_tissue.py
+PYTHONPATH="$(pwd)/src" "$(pwd)/venv/bin/python" src/training/train_expert_unet.py --tissue Breast --epochs 1 --batch_size 16 --lr 5e-4
+PYTHONPATH="$(pwd)/src" "$(pwd)/venv/bin/python" src/training/train_unified_unet.py --epochs 1 --batch_size 16 --lr 5e-4 --tissues Breast Colon Adrenal_gland Esophagus Bile-duct
+PYTHONPATH="$(pwd)/src" "$(pwd)/venv/bin/python" src/evaluation/eval_rq2.py --batch_size 16
+PYTHONPATH="$(pwd)/src" "$(pwd)/venv/bin/python" src/stats/compare_expert_vs_unified.py
 ```
 
-Artifacts:
-- Checkpoints: `checkpoints/`
+Artifacts (RQ2):
+- Checkpoints: `artifacts/rq2/checkpoints/unified/`, `artifacts/rq2/checkpoints/experts/`
 - Datasets: `dataset/`, `dataset_tissues/`
-- Metrics/Stats: `results/metrics.csv`, `results/wilcoxon.csv`, `results/ttest.csv`, `results/stats_report.md`
+- Metrics/Stats: `artifacts/rq2/results/metrics.csv`, `artifacts/rq2/results/wilcoxon.csv`, `artifacts/rq2/results/ttest.csv`, `artifacts/rq2/results/stats_report.md`
