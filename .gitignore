@@ -6,5 +6,5 @@ venv
 .DS_Store
 data
 downloaded_dataset
-__pycache__*.pyc
+*.pyc
 artifacts/
