@@ -1,0 +1,9 @@
+{
+  "tissue": "Adrenal_gland",
+  "split": "val",
+  "path": "/workspace/HistoPathologyResearch/dataset_tissues/Adrenal_gland/val/images/img_Adrenal_gland_2_01155.png",
+  "quality_score": 49.30652618408203,
+  "tissue_coverage": 0.963653564453125,
+  "contrast": 0.17447766661643982,
+  "color_balance": 0.18420180678367615
+}

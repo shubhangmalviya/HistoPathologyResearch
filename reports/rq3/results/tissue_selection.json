@@ -1,0 +1,19 @@
+{
+  "selected_tissues": [
+    "Breast",
+    "Colon",
+    "Adrenal_gland",
+    "Esophagus",
+    "Bile-duct"
+  ],
+  "tissue_counts": {
+    "Breast": 2351,
+    "Colon": 1440,
+    "Adrenal_gland": 437,
+    "Esophagus": 424,
+    "Bile-duct": 420
+  },
+  "total_images": 5072,
+  "selection_date": "2025-09-03 17:30:22",
+  "selection_criteria": "Top 5 tissues by image count"
+}
