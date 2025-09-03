@@ -1,0 +1,74 @@
+{
+  "dice": {
+    "original_mean": 0.3569164533765673,
+    "normalized_mean": 0.41453229414533665,
+    "improvement_percent": 16.142668746061236,
+    "wilcoxon_statistic": 78.0,
+    "wilcoxon_p_value": 0.021908342838287354,
+    "ttest_statistic": 2.2207502551550773,
+    "ttest_p_value": 0.0360603808787564,
+    "sample_size": 25,
+    "significant_wilcoxon": "True",
+    "significant_ttest": "True"
+  },
+  "iou": {
+    "original_mean": 0.27567622297437394,
+    "normalized_mean": 0.3307515952540516,
+    "improvement_percent": 19.978281654271406,
+    "wilcoxon_statistic": 80.0,
+    "wilcoxon_p_value": 0.02550506591796875,
+    "ttest_statistic": 1.9178173517848274,
+    "ttest_p_value": 0.06710920338318387,
+    "sample_size": 25,
+    "significant_wilcoxon": "True",
+    "significant_ttest": "False"
+  },
+  "pixel_acc": {
+    "original_mean": 0.6059326171875,
+    "normalized_mean": 0.6777130126953125,
+    "improvement_percent": 11.84626697288367,
+    "wilcoxon_statistic": 61.0,
+    "wilcoxon_p_value": 0.0050716400146484375,
+    "ttest_statistic": 1.9004046139922184,
+    "ttest_p_value": 0.06945769113989862,
+    "sample_size": 25,
+    "significant_wilcoxon": "True",
+    "significant_ttest": "False"
+  },
+  "precision": {
+    "original_mean": 0.5216070674998831,
+    "normalized_mean": 0.5482272066601688,
+    "improvement_percent": 5.103485136403311,
+    "wilcoxon_statistic": 63.0,
+    "wilcoxon_p_value": 0.012929172172726561,
+    "ttest_statistic": 2.6672741847426824,
+    "ttest_p_value": 0.013478904637057695,
+    "sample_size": 25,
+    "significant_wilcoxon": "True",
+    "significant_ttest": "True"
+  },
+  "recall": {
+    "original_mean": 0.34787384497345203,
+    "normalized_mean": 0.375291499286516,
+    "improvement_percent": 7.881493452074947,
+    "wilcoxon_statistic": 147.0,
+    "wilcoxon_p_value": 0.6915188431739807,
+    "ttest_statistic": 0.8544237767139865,
+    "ttest_p_value": 0.40131885790061916,
+    "sample_size": 25,
+    "significant_wilcoxon": "False",
+    "significant_ttest": "False"
+  },
+  "f1": {
+    "original_mean": 0.3569164529154623,
+    "normalized_mean": 0.4145322937649022,
+    "improvement_percent": 16.142668789518236,
+    "wilcoxon_statistic": 78.0,
+    "wilcoxon_p_value": 0.021908342838287354,
+    "ttest_statistic": 2.220750259290927,
+    "ttest_p_value": 0.036060380562934403,
+    "sample_size": 25,
+    "significant_wilcoxon": "True",
+    "significant_ttest": "True"
+  }
+}
