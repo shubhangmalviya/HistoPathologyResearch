@@ -1,0 +1,17 @@
+{
+  "testing_mode": true,
+  "sample_size_per_tissue": 5,
+  "total_sample_images": 75,
+  "tissues": [
+    "Breast",
+    "Colon",
+    "Adrenal_gland",
+    "Esophagus",
+    "Bile-duct"
+  ],
+  "splits": [
+    "train",
+    "test",
+    "val"
+  ]
+}

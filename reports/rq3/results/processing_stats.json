@@ -1,0 +1,27 @@
+{
+  "total_processed": 75,
+  "total_failed": 0,
+  "processing_time": 15.788466691970825,
+  "tissues_processed": {
+    "Breast": {
+      "processed": 15,
+      "failed": 0
+    },
+    "Colon": {
+      "processed": 15,
+      "failed": 0
+    },
+    "Adrenal_gland": {
+      "processed": 15,
+      "failed": 0
+    },
+    "Esophagus": {
+      "processed": 15,
+      "failed": 0
+    },
+    "Bile-duct": {
+      "processed": 15,
+      "failed": 0
+    }
+  }
+}
