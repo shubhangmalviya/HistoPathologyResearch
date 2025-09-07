@@ -490,13 +490,13 @@ export PYTHONPATH="${PYTHONPATH}:$(pwd)/src"
 
 ### **Citation**
 ```bibtex
-@article{histopathology_research_2024,
+@article{histopathology_research_2025,
     title={Comprehensive Analysis of Nuclei Instance Segmentation on PanNuke Dataset: 
            SAM Variants, Expert vs Unified Models, and GPU-Accelerated Stain Normalization},
-    author={[Your Name]},
-    journal={[Journal Name]},
-    year={2024},
-    note={GitHub: https://github.com/[username]/HistoPathologyResearch}
+    author={Shubhang Malviya},
+    journal={[Not yet published, Submitted to Walsh College]},
+    year={2025},
+    note={GitHub: https://github.com/shubhangmalviya/HistoPathologyResearch}
 }
 ```
 
