@@ -8,3 +8,4 @@ data
 downloaded_dataset
 *.pyc
 artifacts/
+*.pyc
