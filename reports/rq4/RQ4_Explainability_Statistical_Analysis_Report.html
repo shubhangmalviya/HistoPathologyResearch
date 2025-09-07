@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RQ4: Grad-CAM Explainability Enhancement - Statistical Analysis Report</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 40px; line-height: 1.6; color: #333; background-color: #f8f9fa; }
+        .container { max-width: 1200px; margin: 0 auto; background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; border-bottom: 3px solid #e74c3c; padding-bottom: 10px; text-align: center; }
+        h2 { color: #34495e; border-left: 4px solid #e74c3c; padding-left: 15px; margin-top: 30px; }
+        h3 { color: #2c3e50; }
+        .highlight { background-color: #f8f9fa; padding: 15px; border-left: 4px solid #28a745; margin: 15px 0; border-radius: 5px; }
+        .warning { background-color: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; margin: 15px 0; border-radius: 5px; }
+        .result { background-color: #d1ecf1; padding: 15px; border-left: 4px solid #17a2b8; margin: 15px 0; border-radius: 5px; }
+        .negative-result { background-color: #f8d7da; padding: 15px; border-left: 4px solid #dc3545; margin: 15px 0; border-radius: 5px; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; font-size: 0.9em; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f2f2f2; font-weight: bold; }
+        .center { text-align: center; }
+        .right { text-align: right; }
+        .positive { color: #28a745; font-weight: bold; }
+        .negative { color: #dc3545; font-weight: bold; }
+        .neutral { color: #6c757d; font-weight: bold; }
+        code { background-color: #f4f4f4; padding: 2px 4px; border-radius: 3px; font-family: 'Courier New', monospace; }
+        .equation { font-style: italic; text-align: center; margin: 15px 0; }
+        .file-ref { background-color: #e9ecef; padding: 8px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+        ul.checklist { list-style-type: none; }
+        ul.checklist li:before { content: "✓ "; color: #28a745; font-weight: bold; }
+        .metric-card { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; margin: 10px 0; }
+        .metric-title { font-weight: bold; color: #495057; margin-bottom: 10px; }
+        .stat-value { font-size: 1.2em; font-weight: bold; }
+        .toc { background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .toc ul { list-style-type: none; padding-left: 0; }
+        .toc li { margin: 5px 0; }
+        .toc a { text-decoration: none; color: #007bff; }
+        .toc a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Research Question 4: Statistical Analysis Report</h1>
+        <p style="text-align: center; font-size: 1.1em; color: #6c757d;">
+            <strong>Do lightweight explainability techniques (Grad-CAM) enhance interpretability of U-Net-based nuclei segmentation on PanNuke, and does stain normalization improve this further?</strong>
+        </p>
+        
+        <div class="toc">
+            <h3>📋 Table of Contents</h3>
+            <ul>
+                <li><a href="#executive-summary">1. Executive Summary</a></li>
+                <li><a href="#methodology">2. Methodology</a></li>
+                <li><a href="#statistical-results">3. Statistical Results</a></li>
+                <li><a href="#per-tissue-analysis">4. Per-Tissue Analysis</a></li>
+                <li><a href="#interpretation">5. Interpretation & Discussion</a></li>
+                <li><a href="#conclusions">6. Conclusions & Recommendations</a></li>
+                <li><a href="#appendix">7. Appendix</a></li>
+            </ul>
+        </div>
+
+        <div id="executive-summary">
+            <h2>1. Executive Summary</h2>
+            
+            <div class="negative-result">
+                <h3>🎯 Key Finding</h3>
+                <p><strong>No evidence that stain normalization improves Grad-CAM alignment with nuclei masks.</strong> The statistical analysis reveals that normalized preprocessing does not enhance the spatial correspondence between Grad-CAM explanations and ground truth nuclei regions.</p>
+                <p>Analysis of 100 test images across 5 tissue types shows no statistically significant improvement in any of the three alignment metrics evaluated.</p>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-title">📊 Analysis Overview</div>
+                <ul>
+                    <li><strong>Total Images Analyzed:</strong> 100</li>
+                    <li><strong>Tissue Types:</strong> 5 (Adrenal_gland, Bile-duct, Breast, Colon, Esophagus)</li>
+                    <li><strong>Images per Tissue:</strong> 20</li>
+                    <li><strong>Alignment Metrics:</strong> 3 (Energy-in-mask, Pointing game, IoU@0.5)</li>
+                    <li><strong>Statistical Test:</strong> Paired Wilcoxon signed-rank test</li>
+                    <li><strong>Hypothesis:</strong> H1: Normalized > Original</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="methodology">
+            <h2>2. Methodology</h2>
+            
+            <h3>2.1 Grad-CAM Implementation</h3>
+            <div class="highlight">
+                <p><strong>Target Layer Selection:</strong> Last convolutional layers in U-Net decoder for high spatial resolution</p>
+                <ul class="checklist">
+                    <li><strong>Forward Pass:</strong> Record activations from target layers</li>
+                    <li><strong>Backward Pass:</strong> Compute gradients with respect to foreground logit</li>
+                    <li><strong>Aggregation:</strong> Global average pooling of gradients for channel weights</li>
+                    <li><strong>Combination:</strong> Weighted sum of activations → ReLU → Normalize to [0,1]</li>
+                    <li><strong>Target Signal:</strong> Nuclei vs background classification for segmentation focus</li>
+                </ul>
+            </div>
+
+            <h3>2.2 Alignment Metrics</h3>
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Definition</th>
+                    <th>Interpretation</th>
+                    <th>Range</th>
+                </tr>
+                <tr>
+                    <td><strong>Energy-in-mask</strong></td>
+                    <td>Proportion of Grad-CAM energy within nuclei regions</td>
+                    <td>Higher values indicate better distributional alignment</td>
+                    <td>[0, 1]</td>
+                </tr>
+                <tr>
+                    <td><strong>Pointing game</strong></td>
+                    <td>Binary indicator if peak activation falls within nuclei</td>
+                    <td>1 = hit, 0 = miss for most salient point</td>
+                    <td>{0, 1}</td>
+                </tr>
+                <tr>
+                    <td><strong>IoU@0.5</strong></td>
+                    <td>Intersection over Union between binarized CAM and nuclei mask</td>
+                    <td>Overlap when treating CAM as segmentation mask</td>
+                    <td>[0, 1]</td>
+                </tr>
+            </table>
+
+            <h3>2.3 Statistical Design</h3>
+            <div class="highlight">
+                <p><strong>Paired Comparison:</strong> Each test image evaluated under both conditions (original vs normalized preprocessing)</p>
+                <ul>
+                    <li><strong>Test Choice:</strong> Wilcoxon signed-rank test (non-parametric, paired)</li>
+                    <li><strong>Alternative Hypothesis:</strong> One-sided (H1: normalized > original)</li>
+                    <li><strong>Effect Size:</strong> r = Z / √N for practical significance assessment</li>
+                    <li><strong>Significance Level:</strong> α = 0.05</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="statistical-results">
+            <h2>3. Statistical Results</h2>
+            
+            <h3>3.1 Primary Statistical Tests</h3>
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Sample Size</th>
+                    <th>Wilcoxon Statistic</th>
+                    <th>p-value (one-sided)</th>
+                    <th>Effect Size (r)</th>
+                    <th>Mean Difference</th>
+                    <th>Conclusion</th>
+                </tr>
+                <tr>
+                    <td><strong>Energy-in-mask</strong></td>
+                    <td>100</td>
+                    <td>732.0</td>
+                    <td class="negative">1.000</td>
+                    <td class="negative">-0.575</td>
+                    <td class="negative">-0.240</td>
+                    <td class="negative">No improvement</td>
+                </tr>
+                <tr>
+                    <td><strong>Pointing game</strong></td>
+                    <td>100</td>
+                    <td>291.5</td>
+                    <td class="negative">1.000</td>
+                    <td class="negative">-0.416</td>
+                    <td class="negative">-0.300</td>
+                    <td class="negative">No improvement</td>
+                </tr>
+                <tr>
+                    <td><strong>IoU@0.5</strong></td>
+                    <td>100</td>
+                    <td>1828.0</td>
+                    <td class="negative">0.811</td>
+                    <td class="negative">-0.088</td>
+                    <td class="negative">-0.008</td>
+                    <td class="negative">No improvement</td>
+                </tr>
+            </table>
+
+            <h3>3.2 Statistical Interpretation</h3>
+            <div class="negative-result">
+                <p><strong>Unanimous Non-Significance:</strong> All three alignment metrics show p-values >> 0.05, providing no evidence for H1.</p>
+                <ul>
+                    <li><strong>Energy-in-mask:</strong> p ≈ 1.000 indicates strong evidence against improvement</li>
+                    <li><strong>Pointing game:</strong> p ≈ 1.000 shows no benefit in peak alignment</li>
+                    <li><strong>IoU@0.5:</strong> p = 0.811 suggests no overlap improvement</li>
+                </ul>
+            </div>
+
+            <h3>3.3 Effect Size Analysis</h3>
+            <div class="warning">
+                <p><strong>Negative Effect Sizes:</strong> All metrics show negative effect sizes, suggesting stain normalization may actually decrease alignment quality.</p>
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Effect Size (r)</th>
+                        <th>Magnitude</th>
+                        <th>Practical Interpretation</th>
+                    </tr>
+                    <tr>
+                        <td>Energy-in-mask</td>
+                        <td>-0.575</td>
+                        <td>Large negative</td>
+                        <td>Substantial decrease in energy alignment</td>
+                    </tr>
+                    <tr>
+                        <td>Pointing game</td>
+                        <td>-0.416</td>
+                        <td>Medium negative</td>
+                        <td>Moderate decrease in peak accuracy</td>
+                    </tr>
+                    <tr>
+                        <td>IoU@0.5</td>
+                        <td>-0.088</td>
+                        <td>Small negative</td>
+                        <td>Minimal decrease in overlap</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div id="per-tissue-analysis">
+            <h2>4. Per-Tissue Analysis</h2>
+            
+            <h3>4.1 Tissue-Specific Patterns</h3>
+            <div class="result">
+                <p>Analysis across tissue types reveals consistent patterns but with varying magnitudes:</p>
+            </div>
+            
+            <table>
+                <tr>
+                    <th>Tissue</th>
+                    <th>Δ Energy (mean)</th>
+                    <th>Δ Pointing (mean)</th>
+                    <th>Δ IoU (mean)</th>
+                    <th>Sample Size</th>
+                </tr>
+                <tr>
+                    <td><strong>Adrenal_gland</strong></td>
+                    <td class="negative">-0.438</td>
+                    <td class="negative">-0.4</td>
+                    <td class="positive">+0.002</td>
+                    <td>20</td>
+                </tr>
+                <tr>
+                    <td><strong>Bile-duct</strong></td>
+                    <td class="negative">-0.267</td>
+                    <td class="negative">-0.5</td>
+                    <td class="negative">-0.027</td>
+                    <td>20</td>
+                </tr>
+                <tr>
+                    <td><strong>Breast</strong></td>
+                    <td class="negative">-0.053</td>
+                    <td class="negative">-0.1</td>
+                    <td class="positive">+0.034</td>
+                    <td>20</td>
+                </tr>
+                <tr>
+                    <td><strong>Colon</strong></td>
+                    <td class="negative">-0.186</td>
+                    <td class="negative">-0.2</td>
+                    <td class="negative">-0.033</td>
+                    <td>20</td>
+                </tr>
+                <tr>
+                    <td><strong>Esophagus</strong></td>
+                    <td class="negative">-0.258</td>
+                    <td class="negative">-0.3</td>
+                    <td class="negative">-0.017</td>
+                    <td>20</td>
+                </tr>
+            </table>
+
+            <h3>4.2 Tissue-Specific Observations</h3>
+            <div class="highlight">
+                <p><strong>Consistent Negative Trends:</strong></p>
+                <ul>
+                    <li><strong>Energy-in-mask:</strong> All tissues show decreased energy alignment with normalization</li>
+                    <li><strong>Pointing game:</strong> All tissues show reduced peak accuracy</li>
+                    <li><strong>IoU@0.5:</strong> Mixed results, with Breast showing modest improvement</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="interpretation">
+            <h2>5. Interpretation & Discussion</h2>
+            
+            <h3>5.1 Primary Finding Interpretation</h3>
+            <div class="negative-result">
+                <p><strong>Reject Alternative Hypothesis:</strong> We fail to reject H0 and conclude that stain normalization does not improve Grad-CAM alignment with nuclei masks.</p>
+                <p><strong>Unexpected Direction:</strong> The consistently negative effect sizes suggest that normalization may actually degrade explanation quality in this specific context.</p>
+            </div>
+
+            <h3>5.2 Possible Explanations</h3>
+            <div class="warning">
+                <p><strong>Potential Mechanisms for Decreased Performance:</strong></p>
+                <ul>
+                    <li><strong>Feature Disruption:</strong> Stain normalization may alter texture/color features that Grad-CAM relies on</li>
+                    <li><strong>Model Calibration:</strong> U-Net trained on original images may be optimally calibrated for original feature distributions</li>
+                    <li><strong>Normalization Artifacts:</strong> Vahadane normalization may introduce artifacts that confuse attention mechanisms</li>
+                    <li><strong>Target Layer Choice:</strong> Decoder layers may be less sensitive to normalization benefits compared to encoder layers</li>
+                </ul>
+            </div>
+
+            <h3>5.3 Clinical Implications</h3>
+            <div class="result">
+                <p><strong>Practical Recommendations:</strong></p>
+                <ul>
+                    <li><strong>Explainability Pipeline:</strong> Use original images for Grad-CAM generation in this setting</li>
+                    <li><strong>Model Deployment:</strong> Consider separate optimization for prediction vs explanation tasks</li>
+                    <li><strong>Quality Assurance:</strong> Validate explanation quality alongside prediction performance</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="conclusions">
+            <h2>6. Conclusions & Recommendations</h2>
+            
+            <h3>6.1 Primary Conclusions</h3>
+            <div class="negative-result">
+                <p><strong>Research Question Answer:</strong> Stain normalization does NOT enhance the interpretability of Grad-CAM explanations for U-Net-based nuclei segmentation on PanNuke.</p>
+                <p><strong>Statistical Evidence:</strong> Strong evidence against improvement (p-values ≈ 1.000) with large negative effect sizes for key metrics.</p>
+            </div>
+
+            <h3>6.2 Methodological Contributions</h3>
+            <div class="highlight">
+                <p><strong>Framework Established:</strong></p>
+                <ul class="checklist">
+                    <li>Comprehensive alignment metrics for segmentation explainability</li>
+                    <li>Paired statistical design for preprocessing comparison</li>
+                    <li>Multi-tissue validation approach</li>
+                    <li>Quantitative framework for explanation quality assessment</li>
+                </ul>
+            </div>
+
+            <h3>6.3 Future Research Directions</h3>
+            <div class="result">
+                <p><strong>Recommended Next Steps:</strong></p>
+                <ul>
+                    <li>Investigate different normalization methods (Macenko, Reinhard)</li>
+                    <li>Evaluate alternative explanation techniques (LIME, SHAP)</li>
+                    <li>Test on different model architectures and target layers</li>
+                    <li>Explore explanation-aware training objectives</li>
+                    <li>Validate findings on larger, multi-center datasets</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="appendix">
+            <h2>7. Appendix</h2>
+            
+            <h3>7.1 Technical Details</h3>
+            <div class="file-ref">
+                <p><strong>Analysis Date:</strong> 2024</p>
+                <p><strong>Notebook:</strong> src/rq4_explainability_analysis.ipynb</p>
+                <p><strong>Model Architecture:</strong> U-Net RQ3 (separate from RQ2)</p>
+                <p><strong>Input Resolution:</strong> 256×256 pixels</p>
+                <p><strong>Device:</strong> CUDA-enabled GPU</p>
+                <p><strong>Stain Normalization:</strong> GPU-accelerated Vahadane method</p>
+            </div>
+
+            <h3>7.2 Files Generated</h3>
+            <ul>
+                <li><code>per_image_alignment_metrics.csv</code> - Detailed per-image alignment scores</li>
+                <li><code>paired_wilcoxon_stats.csv</code> - Statistical test results</li>
+                <li><code>by_tissue_summary.csv</code> - Tissue-specific aggregated results</li>
+                <li><code>figures/</code> - Statistical plots and visualizations</li>
+                <li><code>overlays/</code> - Qualitative Grad-CAM overlays with masks</li>
+            </ul>
+
+            <h3>7.3 Statistical Software</h3>
+            <div class="file-ref">
+                <p>Analysis performed using Python with scipy.stats, pandas, numpy, and matplotlib.</p>
+                <p>Grad-CAM implementation using PyTorch hooks and gradient computation.</p>
+            </div>
+        </div>
+
+        <hr style="margin: 40px 0; border: none; border-top: 2px solid #e9ecef;">
+        <p style="text-align: center; color: #6c757d; font-size: 0.9em;">
+            <em>Generated from RQ4 Explainability Analysis | Research Question 4: Grad-CAM Enhancement Study</em>
+        </p>
+    </div>
+</body>
+</html>

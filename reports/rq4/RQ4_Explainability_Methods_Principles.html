@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explainability Methods and Statistical Principles - RQ4 Analysis</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 40px; line-height: 1.6; color: #333; background-color: #f8f9fa; }
+        .container { max-width: 1200px; margin: 0 auto; background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; border-bottom: 3px solid #e74c3c; padding-bottom: 10px; text-align: center; }
+        h2 { color: #34495e; border-left: 4px solid #e74c3c; padding-left: 15px; margin-top: 30px; }
+        h3 { color: #2c3e50; }
+        .principle { background-color: #f8f9fa; padding: 20px; border-left: 4px solid #28a745; margin: 15px 0; border-radius: 5px; }
+        .example { background-color: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; margin: 15px 0; border-radius: 5px; }
+        .interpretation { background-color: #d1ecf1; padding: 15px; border-left: 4px solid #17a2b8; margin: 15px 0; border-radius: 5px; }
+        .hypothesis { background-color: #f0f0f0; padding: 15px; border: 2px solid #6c757d; margin: 15px 0; border-radius: 5px; }
+        .warning { background-color: #f8d7da; padding: 15px; border-left: 4px solid #dc3545; margin: 15px 0; border-radius: 5px; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f2f2f2; font-weight: bold; }
+        .center { text-align: center; }
+        .right { text-align: right; }
+        .formula { background-color: #e9ecef; padding: 10px; margin: 10px 0; font-family: 'Times New Roman', serif; text-align: center; border-radius: 3px; }
+        .decision-tree { background-color: #e8f5e8; padding: 15px; border: 2px solid #28a745; border-radius: 5px; }
+        code { background-color: #f4f4f4; padding: 2px 4px; border-radius: 3px; font-family: 'Courier New', monospace; }
+        .flowchart { text-align: center; margin: 20px 0; }
+        .step { display: inline-block; background: #e74c3c; color: white; padding: 10px 15px; margin: 5px; border-radius: 5px; }
+        .arrow { font-size: 20px; color: #e74c3c; }
+        .gradcam-flow { background-color: #e8f4fd; padding: 15px; border: 2px solid #17a2b8; border-radius: 5px; margin: 15px 0; }
+        .metric-comparison { background-color: #f8f9fa; border: 1px solid #dee2e6; padding: 15px; margin: 10px 0; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Explainability Methods and Statistical Principles for RQ4</h1>
+        <p style="text-align: center; font-size: 1.1em; color: #6c757d;"><em>A comprehensive guide to Grad-CAM methodology and alignment measurement principles</em></p>
+
+        <h2>1. Fundamental Explainability Principles</h2>
+
+        <div class="principle">
+            <h3>1.1 The Goal of Model Explainability</h3>
+            <p><strong>Core Principle:</strong> Explainability techniques aim to provide human-interpretable insights into model decision-making processes, particularly crucial in high-stakes domains like medical imaging.</p>
+            
+            <p><strong>For Segmentation Tasks:</strong> We need to understand not just <em>what</em> the model predicts, but <em>where</em> it focuses its attention and <em>why</em> certain regions are deemed important.</p>
+        </div>
+
+        <div class="hypothesis">
+            <h3>1.2 Our Research Hypothesis</h3>
+            <p><strong>Null Hypothesis (H₀):</strong> Stain normalization does NOT improve Grad-CAM alignment with nuclei masks</p>
+            <div class="formula">H₀: Alignment_normalized ≤ Alignment_original</div>
+            
+            <p><strong>Alternative Hypothesis (H₁):</strong> Stain normalization DOES improve Grad-CAM alignment</p>
+            <div class="formula">H₁: Alignment_normalized > Alignment_original</div>
+            
+            <p><strong>Rationale:</strong> If normalization reduces staining variability, it might lead to more consistent and accurate attention maps.</p>
+        </div>
+
+        <h2>2. Grad-CAM Methodology: Step-by-Step</h2>
+
+        <div class="gradcam-flow">
+            <h3>2.1 The Grad-CAM Pipeline</h3>
+            <div class="flowchart">
+                <div class="step">Input Image</div>
+                <span class="arrow">→</span>
+                <div class="step">Forward Pass</div>
+                <span class="arrow">→</span>
+                <div class="step">Record Activations</div>
+                <span class="arrow">→</span>
+                <div class="step">Backward Pass</div>
+                <span class="arrow">→</span>
+                <div class="step">Compute Gradients</div>
+                <span class="arrow">→</span>
+                <div class="step">Weight & Combine</div>
+                <span class="arrow">→</span>
+                <div class="step">Generate Heatmap</div>
+            </div>
+        </div>
+
+        <h3>2.2 Technical Implementation Details</h3>
+
+        <table>
+            <tr>
+                <th>Step</th>
+                <th>Technical Process</th>
+                <th>Mathematical Formulation</th>
+                <th>Purpose</th>
+            </tr>
+            <tr>
+                <td><strong>Target Layer Selection</strong></td>
+                <td>Choose last decoder conv layers</td>
+                <td>Layer L with high spatial resolution</td>
+                <td>Maintain spatial detail for localization</td>
+            </tr>
+            <tr>
+                <td><strong>Forward Hook</strong></td>
+                <td>Record feature maps during forward pass</td>
+                <td>A^k ∈ ℝ^(H×W) for channel k</td>
+                <td>Capture spatial activation patterns</td>
+            </tr>
+            <tr>
+                <td><strong>Backward Hook</strong></td>
+                <td>Compute gradients w.r.t. target output</td>
+                <td>∂y^c/∂A^k for class c</td>
+                <td>Measure importance of each activation</td>
+            </tr>
+            <tr>
+                <td><strong>Weight Calculation</strong></td>
+                <td>Global average pooling of gradients</td>
+                <td>α^k = (1/Z)∑∑(∂y^c/∂A^k_{ij})</td>
+                <td>Aggregate spatial gradient information</td>
+            </tr>
+            <tr>
+                <td><strong>Linear Combination</strong></td>
+                <td>Weighted sum of feature maps</td>
+                <td>L^c = ReLU(∑α^k × A^k)</td>
+                <td>Combine channels with importance weights</td>
+            </tr>
+        </table>
+
+        <h3>2.3 Segmentation-Specific Adaptations</h3>
+
+        <div class="interpretation">
+            <h4>Why Standard Grad-CAM Needs Modification for Segmentation</h4>
+            <p><strong>Classification vs Segmentation:</strong></p>
+            <ul>
+                <li><strong>Classification:</strong> Single prediction per image → straightforward gradient target</li>
+                <li><strong>Segmentation:</strong> Dense predictions → need to aggregate spatial predictions</li>
+            </ul>
+            
+            <p><strong>Our Approach:</strong> Target the foreground logit sum to focus on nuclei vs background distinction</p>
+            <div class="formula">Target = ∑∑ logit_nuclei(i,j) across spatial locations</div>
+        </div>
+
+        <h2>3. Alignment Metrics: Measuring Explanation Quality</h2>
+
+        <h3>3.1 Why Multiple Metrics?</h3>
+
+        <div class="principle">
+            <p><strong>Complementary Perspectives:</strong> Each metric captures different aspects of alignment quality. Using multiple metrics provides a comprehensive evaluation.</p>
+        </div>
+
+        <div class="metric-comparison">
+            <h4>Energy-in-Mask: Distributional Alignment</h4>
+            <p><strong>Formula:</strong> Energy_in_mask = (∑CAM × Mask) / ∑CAM</p>
+            <p><strong>Interpretation:</strong> What proportion of the explanation energy falls within true nuclei regions?</p>
+            <p><strong>Range:</strong> [0, 1], where 1 = perfect energy concentration in nuclei</p>
+            <p><strong>Strengths:</strong> Captures overall spatial correspondence</p>
+            <p><strong>Limitations:</strong> Doesn't penalize diffuse attention</p>
+        </div>
+
+        <div class="metric-comparison">
+            <h4>Pointing Game: Peak Precision</h4>
+            <p><strong>Formula:</strong> Pointing = 1 if argmax(CAM) ∈ Nuclei, else 0</p>
+            <p><strong>Interpretation:</strong> Does the most salient point fall within a nucleus?</p>
+            <p><strong>Range:</strong> {0, 1}, binary hit/miss</p>
+            <p><strong>Strengths:</strong> Tests precision of peak attention</p>
+            <p><strong>Limitations:</strong> Ignores rest of the explanation</p>
+        </div>
+
+        <div class="metric-comparison">
+            <h4>IoU@0.5: Segmentation-like Evaluation</h4>
+            <p><strong>Formula:</strong> IoU = |CAM_binary ∩ Mask| / |CAM_binary ∪ Mask|</p>
+            <p><strong>Interpretation:</strong> How well does binarized CAM overlap with nuclei mask?</p>
+            <p><strong>Range:</strong> [0, 1], where 1 = perfect overlap</p>
+            <p><strong>Strengths:</strong> Familiar segmentation metric</p>
+            <p><strong>Limitations:</strong> Threshold dependency (0.5 chosen conventionally)</p>
+        </div>
+
+        <h2>4. Statistical Design Principles</h2>
+
+        <h3>4.1 Why Paired Design?</h3>
+
+        <div class="principle">
+            <h4>Paired vs Independent Samples</h4>
+            <table>
+                <tr>
+                    <th>Design</th>
+                    <th>Our Implementation</th>
+                    <th>Advantages</th>
+                    <th>Statistical Power</th>
+                </tr>
+                <tr>
+                    <td><strong>Paired</strong></td>
+                    <td>Same image → Original & Normalized</td>
+                    <td>• Controls for image complexity<br>• Higher statistical power<br>• Eliminates confounding</td>
+                    <td>Higher (reduces variance)</td>
+                </tr>
+                <tr>
+                    <td><strong>Independent</strong></td>
+                    <td>Different images for each condition</td>
+                    <td>• Simpler analysis<br>• No carryover effects</td>
+                    <td>Lower (more variance)</td>
+                </tr>
+            </table>
+        </div>
+
+        <h3>4.2 Why Wilcoxon Signed-Rank Test?</h3>
+
+        <div class="decision-tree">
+            <h4>Statistical Test Decision Tree</h4>
+            <p><strong>Question 1:</strong> Are samples paired? → <strong>Yes</strong> (same images)</p>
+            <p><strong>Question 2:</strong> Are differences normally distributed? → <strong>Unknown/Unlikely</strong> (bounded metrics)</p>
+            <p><strong>Question 3:</strong> One-sided or two-sided test? → <strong>One-sided</strong> (directional hypothesis)</p>
+            <p><strong>Conclusion:</strong> Wilcoxon signed-rank test (one-sided)</p>
+        </div>
+
+        <table>
+            <tr>
+                <th>Test Characteristic</th>
+                <th>Wilcoxon Signed-Rank</th>
+                <th>Paired t-test</th>
+                <th>Our Choice Rationale</th>
+            </tr>
+            <tr>
+                <td><strong>Distributional Assumption</strong></td>
+                <td>None (non-parametric)</td>
+                <td>Normality of differences</td>
+                <td>Alignment metrics are bounded [0,1], may be skewed</td>
+            </tr>
+            <tr>
+                <td><strong>Robustness to Outliers</strong></td>
+                <td>High (rank-based)</td>
+                <td>Low (mean-based)</td>
+                <td>Some images may have extreme CAM patterns</td>
+            </tr>
+            <tr>
+                <td><strong>Power with Normal Data</strong></td>
+                <td>~95% of t-test</td>
+                <td>100% (optimal)</td>
+                <td>Small power loss acceptable for robustness</td>
+            </tr>
+            <tr>
+                <td><strong>Interpretability</strong></td>
+                <td>Median-based</td>
+                <td>Mean-based</td>
+                <td>Median more robust for bounded metrics</td>
+            </tr>
+        </table>
+
+        <h3>4.3 Effect Size: Beyond p-values</h3>
+
+        <div class="interpretation">
+            <h4>Why Effect Size Matters</h4>
+            <p><strong>Statistical vs Practical Significance:</strong></p>
+            <ul>
+                <li><strong>p-value:</strong> Tells us if an effect exists (with sufficient sample size)</li>
+                <li><strong>Effect size:</strong> Tells us how large/meaningful the effect is</li>
+            </ul>
+            
+            <p><strong>Our Effect Size Measure:</strong> r = Z / √N</p>
+            <div class="formula">
+                r = Z-score / √(sample size)<br>
+                Interpretation: |r| < 0.1 (small), 0.3 (medium), 0.5 (large)
+            </div>
+        </div>
+
+        <h2>5. Interpretation Guidelines</h2>
+
+        <h3>5.1 What Do Our Results Mean?</h3>
+
+        <div class="warning">
+            <h4>Interpreting Non-Significant Results</h4>
+            <p><strong>Common Misinterpretation:</strong> "No significant difference means no difference"</p>
+            <p><strong>Correct Interpretation:</strong> "Insufficient evidence to conclude there is a meaningful difference"</p>
+            
+            <p><strong>Our Specific Case:</strong></p>
+            <ul>
+                <li><strong>p-values ≈ 1.000:</strong> Strong evidence AGAINST improvement</li>
+                <li><strong>Negative effect sizes:</strong> Suggests normalization may actually hurt alignment</li>
+                <li><strong>Consistent across metrics:</strong> Pattern is robust, not due to chance</li>
+            </ul>
+        </div>
+
+        <h3>5.2 Clinical and Technical Implications</h3>
+
+        <div class="principle">
+            <h4>Translation to Practice</h4>
+            <table>
+                <tr>
+                    <th>Finding</th>
+                    <th>Immediate Implication</th>
+                    <th>Long-term Consideration</th>
+                </tr>
+                <tr>
+                    <td>No improvement in alignment</td>
+                    <td>Use original images for Grad-CAM</td>
+                    <td>Investigate other explainability methods</td>
+                </tr>
+                <tr>
+                    <td>Negative effect sizes</td>
+                    <td>Avoid normalization for explanations</td>
+                    <td>Study mechanism of degradation</td>
+                </tr>
+                <tr>
+                    <td>Consistent across tissues</td>
+                    <td>General recommendation</td>
+                    <td>Validate on other datasets</td>
+                </tr>
+            </table>
+        </div>
+
+        <h2>6. Methodological Limitations and Future Directions</h2>
+
+        <h3>6.1 Study Limitations</h3>
+
+        <div class="warning">
+            <h4>Scope and Generalizability</h4>
+            <ul>
+                <li><strong>Single Architecture:</strong> Results specific to U-Net, may not generalize to other models</li>
+                <li><strong>Single Normalization Method:</strong> Only tested Vahadane, other methods may behave differently</li>
+                <li><strong>Target Layer Choice:</strong> Decoder layers chosen; encoder layers might show different patterns</li>
+                <li><strong>Dataset Specificity:</strong> PanNuke characteristics may not represent all histopathology data</li>
+                <li><strong>Threshold Dependency:</strong> IoU@0.5 threshold is conventional but arbitrary</li>
+            </ul>
+        </div>
+
+        <h3>6.2 Future Research Opportunities</h3>
+
+        <div class="example">
+            <h4>Recommended Extensions</h4>
+            <p><strong>Methodological:</strong></p>
+            <ul>
+                <li>Test multiple normalization methods (Macenko, Reinhard, SPCN)</li>
+                <li>Evaluate different model architectures (ResNet, Vision Transformers)</li>
+                <li>Investigate optimal target layer selection strategies</li>
+                <li>Develop explanation-aware training objectives</li>
+            </ul>
+            
+            <p><strong>Experimental:</strong></p>
+            <ul>
+                <li>Multi-center validation studies</li>
+                <li>Expert radiologist evaluation of explanation quality</li>
+                <li>Task-specific alignment metrics development</li>
+                <li>Real-world clinical workflow integration studies</li>
+            </ul>
+        </div>
+
+        <h2>7. Conclusion: Lessons for Explainable AI in Medical Imaging</h2>
+
+        <div class="principle">
+            <h3>Key Takeaways</h3>
+            <p><strong>For Researchers:</strong></p>
+            <ul>
+                <li>Preprocessing effects on explainability can differ from effects on accuracy</li>
+                <li>Multiple complementary metrics provide more robust evaluation</li>
+                <li>Paired statistical designs increase power for detecting preprocessing effects</li>
+                <li>Non-parametric tests are often more appropriate for bounded metrics</li>
+            </ul>
+            
+            <p><strong>For Practitioners:</strong></p>
+            <ul>
+                <li>Validate explanation quality separately from prediction performance</li>
+                <li>Consider preprocessing pipeline effects on interpretability tools</li>
+                <li>Use quantitative metrics alongside qualitative assessment</li>
+                <li>Be cautious about assuming preprocessing benefits transfer to explainability</li>
+            </ul>
+        </div>
+
+        <hr style="margin: 40px 0; border: none; border-top: 2px solid #e9ecef;">
+        <p style="text-align: center; color: #6c757d; font-size: 0.9em;">
+            <em>Methodological Framework for RQ4 Explainability Analysis | Statistical Principles and Grad-CAM Implementation Guide</em>
+        </p>
+    </div>
+</body>
+</html>

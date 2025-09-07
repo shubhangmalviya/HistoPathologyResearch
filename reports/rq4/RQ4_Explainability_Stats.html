@@ -1,0 +1,150 @@
+
+<!DOCTYPE html>
+<html><head><meta charset='utf-8'><title>RQ4 Explainability - Statistical Summary</title></head>
+<body style='font-family:Segoe UI,Arial,sans-serif; margin:40px;'>
+<h1>RQ4: Grad-CAM Alignment Statistical Summary</h1>
+<p><em>Generated: 2025-09-07 06:20:33</em></p>
+<h2>Paired Wilcoxon (H1: normalized > original)</h2>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>metric</th>
+      <th>n</th>
+      <th>wilcoxon_stat</th>
+      <th>p_value</th>
+      <th>effect_r</th>
+      <th>mean_diff</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>energy</td>
+      <td>100</td>
+      <td>732.0</td>
+      <td>1.000000</td>
+      <td>-0.574596</td>
+      <td>-0.240383</td>
+    </tr>
+    <tr>
+      <td>point</td>
+      <td>100</td>
+      <td>291.5</td>
+      <td>0.999984</td>
+      <td>-0.416025</td>
+      <td>-0.300000</td>
+    </tr>
+    <tr>
+      <td>iou</td>
+      <td>100</td>
+      <td>1828.0</td>
+      <td>0.811436</td>
+      <td>-0.088320</td>
+      <td>-0.008235</td>
+    </tr>
+  </tbody>
+</table>
+<h2>By-Tissue Summary (Δ = norm - orig)</h2>
+<table border="1" class="dataframe">
+  <thead>
+    <tr>
+      <th></th>
+      <th colspan="3" halign="left">d_energy</th>
+      <th colspan="3" halign="left">d_point</th>
+      <th colspan="3" halign="left">d_iou</th>
+    </tr>
+    <tr>
+      <th></th>
+      <th>mean</th>
+      <th>median</th>
+      <th>count</th>
+      <th>mean</th>
+      <th>median</th>
+      <th>count</th>
+      <th>mean</th>
+      <th>median</th>
+      <th>count</th>
+    </tr>
+    <tr>
+      <th>tissue</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Adrenal_gland</th>
+      <td>-0.438</td>
+      <td>-0.493</td>
+      <td>20</td>
+      <td>-0.4</td>
+      <td>-1.0</td>
+      <td>20</td>
+      <td>0.002</td>
+      <td>0.005</td>
+      <td>20</td>
+    </tr>
+    <tr>
+      <th>Bile-duct</th>
+      <td>-0.267</td>
+      <td>-0.311</td>
+      <td>20</td>
+      <td>-0.5</td>
+      <td>-1.0</td>
+      <td>20</td>
+      <td>-0.027</td>
+      <td>-0.007</td>
+      <td>20</td>
+    </tr>
+    <tr>
+      <th>Breast</th>
+      <td>-0.053</td>
+      <td>-0.105</td>
+      <td>20</td>
+      <td>-0.1</td>
+      <td>0.0</td>
+      <td>20</td>
+      <td>0.034</td>
+      <td>0.013</td>
+      <td>20</td>
+    </tr>
+    <tr>
+      <th>Colon</th>
+      <td>-0.186</td>
+      <td>-0.181</td>
+      <td>20</td>
+      <td>-0.2</td>
+      <td>0.0</td>
+      <td>20</td>
+      <td>-0.033</td>
+      <td>-0.012</td>
+      <td>20</td>
+    </tr>
+    <tr>
+      <th>Esophagus</th>
+      <td>-0.258</td>
+      <td>-0.182</td>
+      <td>20</td>
+      <td>-0.3</td>
+      <td>0.0</td>
+      <td>20</td>
+      <td>-0.017</td>
+      <td>-0.000</td>
+      <td>20</td>
+    </tr>
+  </tbody>
+</table>
+<h2>Figures</h2>
+<ul>
+  <li>hist_delta_energy.png</li>
+  <li>hist_delta_iou.png</li>
+  <li>bar_mean_diffs.png</li>
+  <li>violin_delta_energy_by_tissue.png</li>
+</ul>
+</body></html>

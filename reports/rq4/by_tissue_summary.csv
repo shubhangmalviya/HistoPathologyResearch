@@ -1,0 +1,8 @@
+,d_energy,d_energy,d_energy,d_point,d_point,d_point,d_iou,d_iou,d_iou
+,mean,median,count,mean,median,count,mean,median,count
+tissue,,,,,,,,,
+Adrenal_gland,-0.438,-0.493,20,-0.4,-1.0,20,0.002,0.005,20
+Bile-duct,-0.267,-0.311,20,-0.5,-1.0,20,-0.027,-0.007,20
+Breast,-0.053,-0.105,20,-0.1,0.0,20,0.034,0.013,20
+Colon,-0.186,-0.181,20,-0.2,0.0,20,-0.033,-0.012,20
+Esophagus,-0.258,-0.182,20,-0.3,0.0,20,-0.017,-0.0,20
